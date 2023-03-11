@@ -1,9 +1,6 @@
 # 存档界面
 
 init python:
-    # 参数
-    mars_flag = None
-
     def save_image(file_name):
         return 'gui/save/' + file_name + '.png'
 
@@ -72,7 +69,6 @@ screen save_window(is_main_menu = False):
                 style 'normal_button'
                 idle save_image(f'page_{page}')
                 hover save_image(f'page_{page}_hover')
-                selected_idle save_image(f'page_{page}_active')
                 insensitive save_image(f'page_{page}_active')
                 sensitive not int(persistent._file_page) == page
                 action FilePage(page)
@@ -132,25 +128,27 @@ screen save_window(is_main_menu = False):
 
                     add FileScreenshot(slot) pos(9,9)
 
-                    imagebutton:
-                        pos (460,125)
-                        selected is_slot_hover(slot)
-                        if renpy.current_screen().screen_name[0] == 'load':
-                            idle save_image('slot_load')
-                            hover save_image('slot_load_hover')
-                            selected_idle save_image('slot_load_hover')
-                        else:
-                            idle save_image('slot_save')
-                            hover save_image('slot_save_hover')
-                            selected_idle save_image('slot_save_hover')
-                        action FileAction(slot)
+                    hbox:
+                        pos (292,131)
+                        spacing 2
 
-                    imagebutton:
-                        pos (287,125)
-                        idle save_image('slot_delete')
-                        hover save_image('slot_delete_hover')
-                        insensitive save_image('slot_delete_disable')
-                        action FileDelete(slot)
+                        imagebutton:
+                            idle save_image('slot_delete')
+                            hover save_image('slot_delete_hover')
+                            insensitive save_image('slot_delete_disable')
+                            action FileDelete(slot)
+
+                        imagebutton:
+                            selected is_slot_hover(slot)
+                            if renpy.current_screen().screen_name[0] == 'load':
+                                idle save_image('slot_load')
+                                hover save_image('slot_load_hover')
+                                selected_idle save_image('slot_load_hover')
+                            else:
+                                idle save_image('slot_save')
+                                hover save_image('slot_save_hover')
+                                selected_idle save_image('slot_save_hover')
+                            action FileAction(slot)
 
                     text FileTime(slot, format=_('{#file_time}%Y/%m/%d %H:%M')):
                         pos (305, 50)

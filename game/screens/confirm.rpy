@@ -6,7 +6,9 @@ screen confirm(message, yes_action, no_action):
 
     style_prefix 'confirm'
 
-    add 'gui/overlay/confirm.png'
+    on 'show' action MouseMove(840, 580, 0.2)
+
+    add 'gui/confirm/overlay.png'
 
     fixed:
 
