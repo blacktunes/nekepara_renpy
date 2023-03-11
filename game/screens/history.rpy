@@ -1,6 +1,18 @@
 init python:
-    def history_image(file_name):
-        return 'gui/history/' + file_name + '.png'
+    def history_image(filename):
+        return 'gui/history/' + filename + '.png'
+
+    @renpy.pure
+    class HistoryVoice(Action, DictEquality):
+        def __init__(self, filename):
+            self.filename = filename
+
+        def __call__(self):
+            if not self.get_sensitive():
+                return
+
+            renpy.play(self.filename, 'voice')
+
 
 screen history():
 
@@ -55,6 +67,25 @@ screen history():
                     xfill True
                     ysize 250
 
+                    if h.voice.filename:
+                        imagebutton:
+                            pos (20, 15)
+                            hover_sound audio.se_select
+                            idle history_image('voice')
+                            hover history_image('voice_hover')
+                            action HistoryVoice(h.voice.filename)
+                    else:
+                        null:
+                            height 51
+                            pos (20, 15)
+
+                    imagebutton:
+                        pos (20, 30)
+                        hover_sound audio.se_select
+                        idle history_image('jump')
+                        hover history_image('jump_hover')
+                        action RollbackToIdentifier(h.rollback_identifier)
+
                     if h.who:
                         label h.who:
                             style 'history_name'
@@ -65,6 +96,7 @@ screen history():
                     else:
                         label '':
                             style 'history_name'
+                            substitute False
 
                     $ what = renpy.filter_text_tags(h.what, allow=gui.history_allow_tags)
                     text what:
@@ -83,10 +115,11 @@ style history_text is say_dialogue
 
 style history_name:
     xpos 110
+    ypos -105
 
 style history_text:
-    xpos 110
-    ypos -30
+    xpos 100
+    ypos -90
     xsize 950
     min_width 950
     text_align 0.0
