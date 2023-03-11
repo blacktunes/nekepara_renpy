@@ -1,4 +1,25 @@
+default persistent._window_alpha = 1.0
+
+init python:
+    def config_image(file_name):
+        return 'gui/config/' + file_name + '.png'
+
+    def window_alpha_change(alpha):
+        persistent._window_alpha = alpha
+        renpy.restart_interaction()
+
+screen text_preview():
+    text '猫娘乐园\nNEKO WORKS\n文字显示速度示例':
+        style 'say_dialogue'
+        pos (710, 400)
+        slow_cps True
+        line_spacing 15
+
+
 screen preferences(is_main_menu = False):
+
+    default config_page = 1
+    default test = True
 
     tag menu
 
@@ -20,152 +41,119 @@ screen preferences(is_main_menu = False):
             style 'normal_button'
             idle history_image('back')
             hover history_image('back_hover')
-            action Return()
+            action [Hide('text_preview'), Return()]
 
-    key 'mouseup_3' activate_sound audio.se_cancel action Return()
+    key 'mouseup_3' activate_sound audio.se_cancel action [Hide('text_preview'), Return()]
 
-    # vbox:
-    #     align (0.5, 0.5)
+    hbox:
+        align(0.5, 0)
+        ypos 80
+        spacing 15
 
-    #     hbox:
-    #         box_wrap True
+        imagebutton:
+            style 'normal_button'
+            idle config_image('game')
+            hover config_image('game_hover')
+            insensitive config_image('game_active')
+            sensitive config_page != 1
+            action [SetScreenVariable('config_page', 1), Show('text_preview')]
 
-    #         if renpy.variant("pc") or renpy.variant("web"):
+        imagebutton:
+            style 'normal_button'
+            idle config_image('sound')
+            hover config_image('sound_hover')
+            insensitive config_image('sound_active')
+            sensitive config_page != 2
+            action [Hide('text_preview'), SetScreenVariable('config_page', 2)]
 
-    #             vbox:
-    #                 style_prefix "radio"
-    #                 label _("显示")
-    #                 textbutton _("窗口") action Preference("display", "window")
-    #                 textbutton _("全屏") action Preference("display", "fullscreen")
+    if config_page == 1:
 
-    #         vbox:
-    #             style_prefix "check"
-    #             label _("快进")
-    #             textbutton _("未读文本") action Preference("skip", "toggle")
-    #             textbutton _("选项后继续") action Preference("after choices", "toggle")
-    #             textbutton _("忽略转场") action InvertSelected(Preference("transitions", "toggle"))
+        timer 0.01 action Show('text_preview')
 
-    #         ## 可在此处添加 radio_pref 或 check_pref 类型的额外 vbox，以添加
-    #         ## 额外的创建者定义的偏好设置。
+        add config_image('config_game'):
+            align (0.5, 0.5)
+            yoffset 50
 
-    #     null height (4 * gui.pref_spacing)
+        add config_image('preview'):
+            pos (680, 350)
+            alpha persistent._window_alpha
 
-    #     hbox:
-    #         style_prefix "slider"
-    #         box_wrap True
+        bar:
+            pos (170, 340)
+            value Preference('text speed')
+            released [Hide('text_preview'), Show('text_preview')]
 
-    #         vbox:
+        bar:
+            pos (170, 460)
+            value Preference('auto-forward time')
 
-    #             label _("文字速度")
+        bar:
+            style 'slider'
+            pos (170, 590)
+            range 1.0
+            changed window_alpha_change
+            value persistent._window_alpha
 
-    #             bar value Preference("text speed")
+    elif config_page == 2:
 
-    #             label _("自动前进时间")
+        add config_image('config_sound'):
+            align (0.5, 0.5)
+            yoffset 50
 
-    #             bar value Preference("auto-forward time")
+        bar:
+            pos (1100, 380)
+            value Preference('main volume')
 
-    #         vbox:
+        bar:
+            pos (1100, 550)
+            value Preference('music volume')
 
-    #             if config.has_music:
-    #                 label _("音乐音量")
+        bar:
+            pos (1100, 720)
+            value Preference('sound volume')
 
-    #                 hbox:
-    #                     bar value Preference("music volume")
+        bar:
+            pos (1100, 890)
+            value Preference('voice volume')
 
-    #             if config.has_sound:
+    # TODO
+    else:
+        vbox:
+            align (0.5, 0.5)
 
-    #                 label _("音效音量")
+            hbox:
+                box_wrap True
 
-    #                 hbox:
-    #                     bar value Preference("sound volume")
+                if renpy.variant('pc') or renpy.variant('web'):
 
-    #                     if config.sample_sound:
-    #                         textbutton _("测试") action Play("sound", config.sample_sound)
+                    vbox:
+                        style_prefix 'radio'
+                        label _('显示')
+                        textbutton _('窗口') action Preference('display', 'window')
+                        textbutton _('全屏') action Preference('display', 'fullscreen')
 
-
-    #             if config.has_voice:
-    #                 label _("语音音量")
-
-    #                 hbox:
-    #                     bar value Preference("voice volume")
-
-    #                     if config.sample_voice:
-    #                         textbutton _("测试") action Play("voice", config.sample_voice)
-
-    #             if config.has_music or config.has_sound or config.has_voice:
-    #                 null height gui.pref_spacing
-
-    #                 textbutton _("全部静音"):
-    #                     action Preference("all mute", "toggle")
-    #                     style "mute_all_button"
+                vbox:
+                    style_prefix 'check'
+                    label _('快进')
+                    textbutton _('未读文本') action Preference('skip', 'toggle')
+                    textbutton _('选项后继续') action Preference('after choices', 'toggle')
+                    textbutton _('忽略转场') action InvertSelected(Preference('transitions', 'toggle'))
 
 
-style pref_label is gui_label
-style pref_label_text is gui_label_text
-style pref_vbox is vbox
+style slider:
+    xsize 380
+    ysize 40
+    base_bar Frame('gui/slider/horizontal_[prefix_]bar.png', None, tile=gui.slider_tile)
+    thumb 'gui/slider/horizontal_[prefix_]thumb.png'
+    thumb_offset 20
+    mouse 'over'
+    hover_sound audio.se_select
 
-style radio_label is pref_label
-style radio_label_text is pref_label_text
-style radio_button is gui_button
-style radio_button_text is gui_button_text
-style radio_vbox is pref_vbox
-
-style check_label is pref_label
-style check_label_text is pref_label_text
-style check_button is gui_button
-style check_button_text is gui_button_text
-style check_vbox is pref_vbox
-
-style slider_label is pref_label
-style slider_label_text is pref_label_text
-style slider_slider is gui_slider
-style slider_button is gui_button
-style slider_button_text is gui_button_text
-style slider_pref_vbox is pref_vbox
-
-style mute_all_button is check_button
-style mute_all_button_text is check_button_text
-
-style pref_label:
-    top_margin gui.pref_spacing
-    bottom_margin 3
-
-style pref_label_text:
-    yalign 1.0
-
-style pref_vbox:
-    xsize 338
-
-style radio_vbox:
-    spacing gui.pref_button_spacing
-
-style radio_button:
-    properties gui.button_properties("radio_button")
-    foreground "gui/button/radio_[prefix_]foreground.png"
-
-style radio_button_text:
-    properties gui.button_text_properties("radio_button")
-
-style check_vbox:
-    spacing gui.pref_button_spacing
-
-style check_button:
-    properties gui.button_properties("check_button")
-    foreground "gui/button/check_[prefix_]foreground.png"
-
-style check_button_text:
-    properties gui.button_text_properties("check_button")
-
-style slider_slider:
-    xsize 525
-
-style slider_button:
-    properties gui.button_properties("slider_button")
-    yalign 0.5
-    left_margin 15
-
-style slider_button_text:
-    properties gui.button_text_properties("slider_button")
-
-style slider_vbox:
-    xsize 675
+style vslider:
+    xsize 40
+    ysize 380
+    base_bar Frame('gui/slider/vertical_[prefix_]bar.png', None, tile=gui.slider_tile)
+    thumb 'gui/slider/vertical_[prefix_]thumb.png'
+    thumb_offset 20
+    mouse 'over'
+    hover_sound audio.se_select

@@ -27,9 +27,10 @@ label test:
     with Dissolve(2.0)
 
     play sound 鸟
-    stop sound fadeout 5.0
 
     pause 4
+
+    stop sound fadeout 5.0
 
     scene white
     with Dissolve(2.0)
@@ -47,7 +48,7 @@ label test:
     voice chok_4_90002
     x '「嗯啾……啾叭……嗯咧咯……」'
 
-    voice chok_4_90002
+    voice vani_4_90002
     x '「咧咯咧咯……」'
 
     '下半身好像有种湿湿暖暖的感觉……？'
@@ -56,6 +57,8 @@ label test:
     '想啥呢，醒醒吧'
 
     scene black
-    with Fade(1.0)
+    with Dissolve(1.0)
+
+    $ renpy.end_replay()
 
     return

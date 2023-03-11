@@ -63,30 +63,6 @@ style vscrollbar:
     base_bar Frame("gui/scrollbar/vertical_[prefix_]bar.png", gui.vscrollbar_borders, tile=gui.scrollbar_tile)
     thumb Frame("gui/scrollbar/vertical_[prefix_]thumb.png", gui.vscrollbar_borders, tile=gui.scrollbar_tile)
 
-# TODO
-style slider:
-    ysize gui.slider_size
-    base_bar Frame("gui/slider/horizontal_[prefix_]bar.png", gui.slider_borders, tile=gui.slider_tile)
-    thumb "gui/slider/horizontal_[prefix_]thumb.png"
-
-# TODO
-style vslider:
-    xsize gui.slider_size
-    base_bar Frame("gui/slider/vertical_[prefix_]bar.png", gui.vslider_borders, tile=gui.slider_tile)
-    thumb "gui/slider/vertical_[prefix_]thumb.png"
-
-
-# TODO
-style frame:
-    padding gui.frame_borders.padding
-    background Frame("gui/overlay/frame.png", gui.frame_borders, tile=gui.frame_tile)
-
-
-style return_button:
-    xpos gui.navigation_xpos
-    yalign 1.0
-    yoffset -30
-
 
 ################################################################################
 ## 游戏内界面
